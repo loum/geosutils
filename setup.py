@@ -66,7 +66,7 @@ log_conf_file = find_data_files('oct/utils/conf/',
 
 setup(name='python-oct-utils',
       version=VERSION,
-      description='Toll Outlet Portal Middleware',
+      description='OCT Utils',
       author='Lou Markovski',
       author_email='lou.markovski@tollgroup.com',
       packages=['oct',

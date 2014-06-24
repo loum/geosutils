@@ -1,4 +1,4 @@
-.. Toll Outlet Portal Middelware Log
+.. Log - Logger
 
 .. toctree::
     :maxdepth: 2
