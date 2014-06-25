@@ -1,4 +1,4 @@
-.. OCT Utils documentation master file, created by
+.. OCT Utils documentation master file
 
 OCT Utils
 =========
