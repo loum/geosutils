@@ -60,9 +60,6 @@ files = find_data_files('doc/build/',
                         '*.css',
                         recursive=True,
                         target_dir='doc/build')
-log_conf_file = find_data_files('oct/utils/conf/',
-                                '*.conf',
-                                version=VERSION)
 
 setup(name='python-oct-utils',
       version=VERSION,

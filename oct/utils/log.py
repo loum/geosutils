@@ -30,18 +30,25 @@ locations = [
     os.environ.get("LOG_CONF"),
     os.curdir,
     os.path.expanduser("~"),
-    os.path.join(os.path.expanduser("~"), '.top'),
 ]
 
 found_log_config = False
 for loc in locations:
+    if loc is None:
+        continue
+
     try:
-        source = open(os.path.join(loc, "log.conf"))
+        source = open(os.path.join(loc, 'log.conf'))
+    except IOError as err:
+        print('IOError: %s' % err)
+        continue
+
+    try:
         logging.config.fileConfig(source)
         source.close()
         found_log_config = True
         break
-    except Exception, err:
+    except Exception as err:
         pass
 
 # Holy crap!  Some black magic to identify logger handlers ...
