@@ -40,7 +40,8 @@ for loc in locations:
     try:
         source = open(os.path.join(loc, 'log.conf'))
     except IOError as err:
-        print('IOError: %s' % err)
+        # Not a bad thing if the open failed.  Just means that the log
+        # source does not exist.
         continue
 
     try:
