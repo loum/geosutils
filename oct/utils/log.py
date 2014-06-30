@@ -16,11 +16,9 @@ import inspect
 """Configuration file for the logging module can be provided in the
 following locations:
 
+  * A place named by an environment variable `LOG_CONF`
   * Local directory - `./log.conf`
   * User's home directory - `~user/log.conf`
-  * A standard system-wide directory - `/etc/myproject/myproject.conf`
-  * A place named by an environment variable `LOG_CONF`
-  * The `conf` directory of the `utils` package distribution ("utils/conf")
 
 This arrangement is analogous to "rc" files.  for example, "bashrc",
 "vimrc", etc.
@@ -78,7 +76,20 @@ if not found_log_config:
 
 
 def set_console():
-    """Drop back to the root logger handler.
+    """Drop back to the root logger handler.  This is typically the console.
+
+    This can be used to override the logging file output stream and send
+    log messages to the console.  For example, consider the following
+    code that has a ``log.conf`` that writes to the log file ``my.log``::
+
+        from oct.utils.log import log, set_console
+        
+        set_console()
+        log.debug('Log from inside my Python module')
+
+    The ``set_console()`` call will force the log message to write
+    ``Log from inside my Python module`` to the console.
+
     """
     for hdlr in log.handlers:
         log.removeHandler(hdlr)
@@ -92,8 +103,38 @@ def set_console():
 
 
 def rollover():
-    """Specific to a TimedRotatingFileHandler, will force a rollover of the
-    logs as per the requirements outlined in the logging configuration.
+    """Specific to the :class:`logging.handlers.TimedRotatingFileHandler`
+    handler objects, will force a rollover of the logs as per the
+    requirements outlined in the logging configuration.
+
+    Consider the following ``log.conf`` handler definition::
+
+        [handler_myFileHandler]
+        class=handlers.TimedRotatingFileHandler
+        level=DEBUG
+        formatter=simpleFormatter
+        args=('my.log', 'midnight')
+
+    By default, the log will rollover at ``midnight``.  This is well and
+    true for a daemon process, but for a batch process we may need to
+    force a rollover upon startup.  For example, if you have a file
+    with the following python code (and corresponding ``log.conf`` file)::
+
+        from oct.utils.log import log, rollover
+        
+        rollover() 
+        log.debug('Log from inside my Python module')
+
+    The ``rollover`` call will move the existing ``my.conf`` to
+    ``my.conf.<YYYY-MMM-DD>`` (where ``YYYY-MM-DD`` is today - 1 day) and
+    write ``Log from inside my Python module`` to a new ``my.conf`` file.
+
+    .. note::
+
+        Rollover will only occur once per day.  For example, if today's
+        date is 2014-06-30 and we are currently logging to ``my.log``,
+        then a rollover will only occur if the file ``my.log.2014-06-29``
+        does not already exist.
 
     """
     # Check if we can identify a handler log file from the logger_name.
@@ -135,30 +176,94 @@ def rollover():
 
 
 def set_log_level(level='INFO'):
-    """
+    """Set the lower threshold of logged message level.  Level
+    defaults to ``INFO``.  All default log levels are supported
+    ``NOTSET``, ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR`` and
+    ``CRITICAL`` in order of severity.
+
+    For example::
+
+        >>> from oct.utils.log import log, set_log_level
+        >>> log.debug('This DEBUG message should display')
+        2014-06-30 12:50:48,407 DEBUG:: This DEBUG message should display
+        >>> set_log_level(level='INFO')
+        >>> log.debug('This DEBUG message should now not display')
+        >>> log.debug('This DEBUG message should now not display')
+        >>> log.info('This INFO message should display')
+        2014-06-30 12:51:44,782 INFO:: This INFO message should display
+
+    **Kwargs:**
+        *level*: the lower log level threshold.  All log levels including
+        and above this level in serverity will be logged
+
     """
     level_map = {
+        'CRITICAL': logging.INFO,
+        'ERROR': logging.INFO,
+        'WARNING': logging.INFO,
         'INFO': logging.INFO,
         'DEBUG': logging.DEBUG,
+        'NOTSET': logging.DEBUG,
     }
 
     log.setLevel(level_map[level])
 
 
 def suppress_logging():
-    """
+    """Provides an overriding (to level ``CRITICAL``) suppression mechanism
+    for all loggers which takes precedence over the logger`s own level.
+
+    When the need arises to temporarily throttle logging output down
+    across the whole application, this function can be useful.
+    Its effect is to disable all logging calls below severity level
+    ``CRITICAL``.  For example::
+
+        >>> from oct.utils.log import log, suppress_logging
+        >>> log.debug('This DEBUG message should display')
+        2014-06-30 13:00:39,882 DEBUG:: This DEBUG message should display
+        >>> suppress_logging()
+        >>> log.debug('This DEBUG message should now not display')
+        >>> log.critical('But CRITICAL messages will get through')
+        2014-06-30 13:02:59,159 CRITICAL:: But CRITICAL messages will get through
+
     """
     logging.disable(logging.ERROR)
 
 
 def enable_logging():
-    """
+    """Opposite of the :func:`oct.utils.log.suppress_logging` function.
+
+    Re-enables logging to ``DEBUG`` level and above::
+
+        >>> from oct.utils.log import log, suppress_logging, enable_logging
+        >>> suppress_logging()
+        >>> log.debug('This DEBUG message should now not display')
+        >>> enable_logging()
+        >>> log.debug('This DEBUG message should now display')
+        2014-06-30 13:08:22,173 DEBUG:: This DEBUG message should now display
+
     """
     logging.disable(logging.NOTSET)
 
 
 def autolog(message):
     """Automatically log the current function details.
+
+    Used interchangeably with the ``log`` handler object.  Handy for
+    for verbose messaging during development by adding more verbose detail
+    to the logging message, such as the calling function/method name
+    and line number that raised the log call::
+
+        >>> from oct.utils.log import autolog
+        >>> autolog('Verbose')
+        2014-06-30 13:13:08,063 DEBUG:: Verbose: <module> in <stdin>:1
+        >>> log.debug('DEBUG message')
+        2014-06-30 13:15:35,319 DEBUG:: DEBUG message
+        >>> autolog('DEBUG message')
+        2014-06-30 13:15:41,760 DEBUG:: DEBUG message: <module> in <stdin>:1
+
+    **Args:**
+        *message*: the log message to display
 
     """
     if log.isEnabledFor(logging.DEBUG):

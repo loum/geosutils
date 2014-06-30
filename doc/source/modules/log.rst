@@ -19,8 +19,24 @@ ouput to ``STDOUT`` or to a file stream (if configured).
 Simplest Usage (Console)
 ------------------------
 
-Simply import the :mod:`oct.utils.log` log handler into your project.
-The following example demonstrates usage directly under the Python 
+Simply import the :mod:`oct.utils.log` ``log`` handler object into your
+project.
+
+
+    .. note::
+
+        Behind the scenes, the :mod:`oct.utils.log` ``log`` handler object
+        is instantiated through the module-level function
+        ``logging.getLogger(name)``.  Multiple calls to :func:`getLogger`
+        with the same name will always return a reference to the same
+        Logger object.
+        
+        ``name`` is defined as the highest level Python calling module.  For
+        example, in the :ref:`module_usage_file_based_configuration`
+        sample below, ``name`` will be ``you_beaut.py``.  For normal
+        console-based output, name would be ``<stdin>``.
+
+The following example demonstrates usage directly under the Python
 interpreter::
 
     $ python
@@ -34,12 +50,14 @@ interpreter::
 
     This example demonstrates console-based usage that writes to ``STDOUT``
 
+.. _module_usage_file_based_configuration:
+
 Module Usage (File-based Configuration)
 ---------------------------------------
 
 Logging from your ``*.py`` is probably a more useful proposition.
 Similarly, import the :mod:`oct.utils.log` to your python module.
-Do demonstrate, add the following code into a file called ``you_beaut.py``::
+To demonstrate, add the following code into a file called ``you_beaut.py``::
 
     from oct.utils.log import log
 
@@ -105,8 +123,13 @@ stream defined by ``handler_youBeautFileHandler`` section from the
 
 Functions
 ---------
-.. automodule:: oct.utils.log
-    :members:
+.. currentmodule:: oct.utils.log
+.. autofunction:: set_console
+.. autofunction:: rollover
+.. autofunction:: set_log_level
+.. autofunction:: suppress_logging
+.. autofunction:: enable_logging
+.. autofunction:: autolog
 
 Indices and tables
 ------------------
