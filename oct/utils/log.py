@@ -3,7 +3,6 @@ __all__ = [
     "set_log_level",
     "suppress_logging",
     "set_console",
-    "rollover",
 ]
 
 import logging
@@ -100,79 +99,6 @@ def set_console():
     ch.setFormatter(formatter)
     log.addHandler(ch)
     log.level = logging.NOTSET
-
-
-def rollover():
-    """Specific to the :class:`logging.handlers.TimedRotatingFileHandler`
-    handler objects, will force a rollover of the logs as per the
-    requirements outlined in the logging configuration.
-
-    Consider the following ``log.conf`` handler definition::
-
-        [handler_myFileHandler]
-        class=handlers.TimedRotatingFileHandler
-        level=DEBUG
-        formatter=simpleFormatter
-        args=('my.log', 'midnight')
-
-    By default, the log will rollover at ``midnight``.  This is well and
-    true for a daemon process, but for a batch process we may need to
-    force a rollover upon startup.  For example, if you have a file
-    with the following python code (and corresponding ``log.conf`` file)::
-
-        from oct.utils.log import log, rollover
-        
-        rollover() 
-        log.debug('Log from inside my Python module')
-
-    The ``rollover`` call will move the existing ``my.conf`` to
-    ``my.conf.<YYYY-MMM-DD>`` (where ``YYYY-MM-DD`` is today - 1 day) and
-    write ``Log from inside my Python module`` to a new ``my.conf`` file.
-
-    .. note::
-
-        Rollover will only occur once per day.  For example, if today's
-        date is 2014-06-30 and we are currently logging to ``my.log``,
-        then a rollover will only occur if the file ``my.log.2014-06-29``
-        does not already exist.
-
-    """
-    # Check if we can identify a handler log file from the logger_name.
-    log.debug('Checking for a log rollover event')
-    logger_handler = None
-    for handler in log.handlers:
-        if not isinstance(handler,
-                          logging.handlers.TimedRotatingFileHandler):
-            log.debug('Not a TimedRotatingFileHandler -- skip rollover')
-            continue
-
-        # Try to match the logger_name with the log filename.
-        log_file = os.path.basename(handler.baseFilename)
-        logger_from_file = os.path.splitext(log_file)[0]
-
-        if (logger_name == logger_from_file and
-            isinstance(handler, logging.handlers.TimedRotatingFileHandler)):
-            logger_handler = handler
-            break
-
-    if logger_handler is not None:
-        # OK, we have found our handler, check if a backup already exists.
-        now = datetime.datetime.now()
-        today_logfile = ("%s.%s" % (logger_handler.baseFilename,
-                                    now.strftime("%Y-%m-%d")))
-        backup_time = now - datetime.timedelta(days=1)
-        backup_logfile = ("%s.%s" % (logger_handler.baseFilename,
-                                     backup_time.strftime("%Y-%m-%d")))
-
-        # Rollover only if a backup has not already been made.
-        # This includes a backup of today.
-        log.debug('Checking if backup logs "%s/%s" exist' %
-                   (backup_logfile, today_logfile))
-        if (not os.path.exists(backup_logfile) and
-            not os.path.exists(today_logfile)):
-            log.info('Forcing rollover of log: "%s"' %
-                     logger_handler.baseFilename)
-            handler.doRollover()
 
 
 def set_log_level(level='INFO'):

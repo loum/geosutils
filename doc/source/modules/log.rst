@@ -125,7 +125,6 @@ Functions
 ---------
 .. currentmodule:: oct.utils.log
 .. autofunction:: set_console
-.. autofunction:: rollover
 .. autofunction:: set_log_level
 .. autofunction:: suppress_logging
 .. autofunction:: enable_logging
