@@ -1,8 +1,10 @@
 __all__ = [
     "log",
+    "set_console",
     "set_log_level",
     "suppress_logging",
-    "set_console",
+    "enable_logging",
+    "autolog",
 ]
 
 import logging
