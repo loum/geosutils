@@ -6,6 +6,7 @@ from oct.utils.files import (load_template,
                              get_directory_files,
                              get_directory_files_list,
                              remove_files,
+                             move_file,
                              check_filename,
                              gen_digest,
                              copy_file,
@@ -232,3 +233,33 @@ class TestFiles(unittest2.TestCase):
         received = templater(path_to_template_file, **d)
         msg = 'Template string error -- incomplete data'
         self.assertIsNone(received, msg)
+
+    def test_move_file_to_current_directory(self):
+        """Move a file into the current directory.
+        """
+        file_fh = tempfile.NamedTemporaryFile(delete=False)
+        filename = file_fh.name
+
+        received = move_file(filename, os.path.basename(filename))
+        msg = 'Move file from current directory failed'
+        self.assertTrue(received, msg)
+
+        # Clean up.
+        remove_files(os.path.basename(filename))
+
+    def test_move_file_to_directory(self):
+        """Move a file into a new directory.
+        """
+        target_dir = 'banana'
+        file_fh = tempfile.NamedTemporaryFile(delete=False)
+        filename = file_fh.name
+
+        received = move_file(filename,
+                             os.path.join(target_dir,
+                                          os.path.basename(filename)))
+        msg = 'Move file from current directory failed'
+        self.assertTrue(received, msg)
+
+        # Clean up.
+        remove_files(get_directory_files_list('banana'))
+        os.removedirs('banana')

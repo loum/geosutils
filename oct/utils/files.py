@@ -158,8 +158,13 @@ def move_file(source, target, err=False, dry=False):
     status = True
 
     if os.path.exists(source):
+        dir_status = True
+        dir = os.path.dirname(target)
+        if len(dir):
+            dir_status = create_dir(dir)
+
         if not dry:
-            if create_dir(os.path.dirname(target)):
+            if dir_status:
                 try:
                     os.rename(source, target)
                 except OSError, error:
