@@ -74,19 +74,24 @@ def get_directory_files(path, file_filter=None):
         each file in the directory as a generator
 
     """
+    directory_files = []
     try:
-        for this_file in os.listdir(path):
-            this_file = os.path.join(path, this_file)
-            if os.path.isfile(this_file):
-                if file_filter is None:
-                    yield this_file
-                else:
-                    reg_c = re.compile(file_filter)
-                    reg_match = reg_c.match(os.path.basename(this_file))
-                    if reg_match:
-                        yield this_file
+        directory_files = os.listdir(path)
     except (TypeError, OSError), err:
         log.error('Directory listing error for %s: %s' % (path, err))
+
+    for this_file in directory_files:
+        this_file = os.path.join(path, this_file)
+        if not os.path.isfile(this_file):
+            continue
+
+        if file_filter is None:
+            yield this_file
+        else:
+            reg_c = re.compile(file_filter)
+            reg_match = reg_c.match(os.path.basename(this_file))
+            if reg_match:
+                yield this_file
 
 
 def get_directory_files_list(path, file_filter=None):
@@ -125,33 +130,23 @@ def move_file(source, target, err=False, dry=False):
     log.info('Moving "%s" to "%s"' % (source, target))
     status = True
 
-    if os.path.exists(source):
+    if not os.path.exists(source):
+        log.warn('Source file "%s" does not exist' % str(source))
+        status = False
+    else:
         dir_status = True
         directory = os.path.dirname(target)
         if len(directory):
             dir_status = create_dir(directory)
 
-        if not dry:
-            if dir_status:
-                try:
-                    os.rename(source, target)
-                except OSError, error:
-                    status = False
-                    log.error('%s move to %s failed -- %s' % (source,
-                                                              target,
-                                                              error))
-    else:
-        log.warn('Source file "%s" does not exist' % str(source))
-        status = False
-
-    if not status and err and not dry:
-        try:
-            if os.path.exists(source):
-                target = '%s.err' % source
+        if not dry and dir_status:
+            try:
                 os.rename(source, target)
-        except OSError, error:
-            log.error('%s move to %s failed -- %s' %
-                      (source, target, error))
+            except OSError as error:
+                status = False
+                log.error('%s move to %s failed -- %s' % (source,
+                                                          target,
+                                                          error))
 
     return status
 
