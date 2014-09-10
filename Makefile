@@ -15,9 +15,7 @@ PYTHONPATH=.
 #
 # Note: for this to work you will need to import the test class into
 # the current namespace via "tests/__init__.py"
-TEST=oct.utils.tests:TestFiles \
-	 oct.utils.tests:TestUtils \
-	 oct.utils.tests:TestSetter
+TEST=geosutils.tests:TestFiles
 
 sdist:
 	$(PY) setup.py sdist
@@ -34,13 +32,13 @@ test:
 	$(NOSE) $(TEST)
 
 uninstall:
-	$(RPM) -e python-oct-utils
+	$(RPM) -e python-geosutils
 
 install:
-	$(RPM) -ivh dist/python-oct-utils-?.??-?.noarch.rpm
+	$(RPM) -ivh dist/python-geosutils-?.??-?.noarch.rpm
 
 upgrade:
-	$(RPM) -Uvh dist/python-oct-utils-?.??-?.noarch.rpm
+	$(RPM) -Uvh dist/python-geosutils-?.??-?.noarch.rpm
 
 clean:
 	$(GIT) clean -xdf

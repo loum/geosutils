@@ -1,6 +1,6 @@
-.. OCT Utils documentation master file
+.. GeosUtils documentation master file
 
-OCT Utils
+GeosUtils
 =========
 
 Contents:

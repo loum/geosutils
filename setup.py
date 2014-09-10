@@ -4,7 +4,7 @@ import fnmatch
 import shutil
 from distutils.core import setup
 
-VERSION = '0.04'
+VERSION = '0.05'
 
 
 def opj(*args):
@@ -61,13 +61,12 @@ files = find_data_files('doc/build/',
                         recursive=True,
                         target_dir='doc/build')
 
-setup(name='python-oct-utils',
+setup(name='python-geosutils',
       version=VERSION,
-      description='OCT Utils',
+      description='GeosUtils',
       author='Lou Markovski',
       author_email='lou.markovski@gmail.com',
-      packages=['oct',
-                'oct.utils'],
-      package_dir={'oct': 'oct'},
-      package_data={'oct': ['utils/conf/*.conf.[0-9]*.[0-9]*']},
+      packages=['geosutils'],
+      package_dir={'geosutils': 'geosutils'},
+      package_data={'geosutils': ['conf/*.conf.[0-9]*.[0-9]*']},
       data_files=files)
