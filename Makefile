@@ -18,7 +18,8 @@ PYTHONPATH=.
 #
 # Note: for this to work you will need to import the test class into
 # the current namespace via "tests/__init__.py"
-TEST=geosutils.tests:TestFiles
+TEST=geosutils.tests:TestFiles \
+	geosutils.tests:TestSetter
 
 sdist:
 	$(PY) setup.py sdist
