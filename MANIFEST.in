@@ -1,2 +1,1 @@
 recursive-include doc/build/ *.html *.png *.js *.css
-include oct/utils/conf/*.conf

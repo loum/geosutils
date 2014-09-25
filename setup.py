@@ -2,7 +2,7 @@ import os
 import glob
 import fnmatch
 import shutil
-from distutils.core import setup
+from setuptools import setup
 
 VERSION = '0.0.6'
 
@@ -53,7 +53,7 @@ def find_data_files(srcdir, *wildcards, **kw):
                     [os.path.basename(f) for f in glob.glob(opj(srcdir, '*'))])
     return file_list
 
-files = find_data_files('doc/build/',
+FILES = find_data_files('doc/build/',
                         '*.html',
                         '*.png',
                         '*.js',
@@ -66,7 +66,12 @@ setup(name='python-geosutils',
       description='GeosUtils',
       author='Lou Markovski',
       author_email='lou.markovski@gmail.com',
+      url='',
+      install_requires=['nose==1.1.2',
+                        'unittest2==0.5.1',
+                        'sphinx==1.0.8',
+                        'coverage==3.7'],
       packages=['geosutils'],
       package_dir={'geosutils': 'geosutils'},
       package_data={'geosutils': ['conf/*.conf.[0-9]*.[0-9]*']},
-      data_files=files)
+      data_files=FILES)
