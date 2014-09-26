@@ -1,3 +1,6 @@
+""":mod:docutils` setup.py file to generate Python compatible sources in
+build/ directory
+"""
 import os
 import glob
 import fnmatch
@@ -73,5 +76,4 @@ setup(name='python-geosutils',
                         'coverage==3.7'],
       packages=['geosutils'],
       package_dir={'geosutils': 'geosutils'},
-      package_data={'geosutils': ['conf/*.conf.[0-9]*.[0-9]*']},
       data_files=FILES)
