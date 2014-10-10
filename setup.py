@@ -62,7 +62,7 @@ FILES = find_data_files('doc/build/',
                         '*.js',
                         '*.css',
                         recursive=True,
-                        target_dir='doc/build')
+                        target_dir='doc/build/geosutils')
 
 setup(name='python-geosutils',
       version=VERSION,
