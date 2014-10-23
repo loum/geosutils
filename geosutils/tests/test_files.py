@@ -15,7 +15,9 @@ from geosutils.files import (load_template,
                              gen_digest,
                              copy_file,
                              gen_digest_path,
-                             templater)
+                             templater,
+                             lock_file,
+                             unlock_file)
 
 
 class TestFiles(unittest2.TestCase):
@@ -269,3 +271,22 @@ class TestFiles(unittest2.TestCase):
         # Clean up.
         remove_files(get_directory_files_list('banana'))
         os.removedirs('banana')
+
+    def test_lock_file(self):
+        """Lock a file.
+        """
+        file_fh = tempfile.NamedTemporaryFile(delete=False)
+        filename = file_fh.name
+        file_fh.close()
+
+        file_desc = lock_file(filename)
+        received = file_desc.read()
+        expected = str()
+        msg = 'Lock did not return a valid file descriptor'
+        self.assertEqual(received, expected, msg)
+
+        unlock_file(file_desc)
+        self.assertRaises(ValueError, file_desc.read)
+
+        # Clean up.
+        remove_files(filename)

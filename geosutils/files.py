@@ -13,6 +13,7 @@ __all__ = [
     "gen_digest",
     "gen_digest_path",
     "templater",
+    "lock_file",
 ]
 import os
 import re
@@ -20,6 +21,7 @@ import string
 import shutil
 import hashlib
 import tempfile
+import fcntl
 
 from geosutils.log import log
 
@@ -392,3 +394,41 @@ def templater(template_file, **kwargs):
               (template_file, str(kwargs), template_sub))
 
     return template_sub
+
+def lock_file(file_to_lock):
+    """Creates a file descriptor for read/write against *file_to_lock*
+    and produces an exclusive lock against the file descriptor.
+
+    **Args:**
+        *file_to_lock*: path to the file to lock.  File must exist before
+        the lock is set (simulates a read lock).
+
+    **Returns:**
+        File descriptor as represented by the :class:`file` object
+        to the *file_to_lock* if lock is successful.  ``None`` otherwise
+
+    """
+    file_desc = None
+    if not os.path.exists(file_to_lock):
+        log.warn('File to lock "%s" does not exist' % file_to_lock)
+    else:
+        file_desc = open(file_to_lock, 'r+')
+        try:
+            fcntl.lockf(file_desc, fcntl.LOCK_EX|fcntl.LOCK_NB)
+            log.debug('Obtained exclusive lock on file "%s"' %
+                      file_desc.name)
+        except IOError:
+            file_desc.close()
+            file_desc = None
+            log.warn('Unable to obtain exclusive lock on file "%s"' %
+                     file_desc.name)
+
+    return file_desc
+
+def unlock_file(file_desc):
+    """Release file lock on *file_desc*.
+
+    """
+    log.debug('Releasing lock on file "%s"' % file_desc.name)
+    fcntl.lockf(file_desc, fcntl.LOCK_UN)
+    file_desc.close()
