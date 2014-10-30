@@ -20,7 +20,8 @@ PYTHONPATH=.
 # the current namespace via "tests/__init__.py"
 TEST=geosutils.tests:TestFiles \
 	geosutils.tests:TestSetter \
-	geosutils.tests:TestUtils
+	geosutils.tests:TestUtils \
+	geosutils.tests:TestConfig
 
 sdist:
 	$(PY) setup.py sdist
