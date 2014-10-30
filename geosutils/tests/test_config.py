@@ -5,13 +5,13 @@
 import unittest2
 import os
 
-import geosutils
+import geosutils.config
 from geosutils.setter import (set_scalar,
                               set_list,
                               set_dict)
 
 
-class DummyConfig(geosutils.Config):
+class DummyConfig(geosutils.config.Config):
     _dummy_key = None
     _int_key = None
     _empty_key = None
@@ -24,7 +24,7 @@ class DummyConfig(geosutils.Config):
     _dummy_dict_as_list = {}
 
     def __init__(self, config_file):
-        geosutils.Config.__init__(self, config_file)
+        geosutils.config.Config.__init__(self, config_file)
 
     @property
     def dummy_key(self):
@@ -117,13 +117,13 @@ class TestConfig(unittest2.TestCase):
                                  'dummy.conf')
 
     def setUp(self):
-        self._conf = geosutils.Config()
+        self._conf = geosutils.config.Config()
 
     def test_init(self):
         """Initialise a Config object.
         """
-        msg = 'Object is not a geosutils.Config'
-        self.assertIsInstance(self._conf, geosutils.Config, msg)
+        msg = 'Object is not a geosutils.config.Config'
+        self.assertIsInstance(self._conf, geosutils.config.Config, msg)
 
     def test_parse_config_no_file(self):
         """Read config with no file provided.
