@@ -52,3 +52,10 @@ class TestUtils(unittest2.TestCase):
         received = get_reverse_timestamp('1996121710--')
         msg = 'Reverse timestamp error: invalid source (unknown delim)'
         self.assertIsNone(received, msg)
+
+    def test_get_reverse_timestamp_invalid_format(self):
+        """Generate reverse timestamp: invalid format).
+        """
+        received = get_reverse_timestamp('19961211ZOCT11')
+        msg = 'Reverse timestamp error: invalid format'
+        self.assertIsNone(received, msg)

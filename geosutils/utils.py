@@ -80,8 +80,11 @@ def get_reverse_timestamp(utc_time=None):
     if utc_time is None:
         secs_since_epoch = time.time()
     elif len(utc_time) == 14 and '-' not in utc_time:
-        utc_struct_time = time.strptime(utc_time, '%Y%m%d%H%M%S')
-        secs_since_epoch = calendar.timegm(utc_struct_time)
+        try:
+            utc_struct_time = time.strptime(utc_time, '%Y%m%d%H%M%S')
+            secs_since_epoch = calendar.timegm(utc_struct_time)
+        except ValueError as error:
+            log.error('Timestamp parse failed: %s' % error)
     else:
         log.error('Unsupported UTC time: "%s"' % utc_time)
 
