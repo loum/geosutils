@@ -138,7 +138,8 @@ def geodesic_points(point_1, point_2, precision=10000):
                                geodesic['azi1'])
 
     number_of_points = int(geodesic['s12'] / precision)
-    log.debug('Number of points to generate: %d' % number_of_points)
+    log.debug('Geodesic (m) %f - number of points to generate: %d' %
+              (geodesic['s12'], number_of_points))
 
     for i in range(number_of_points + 1):
         point = line.Position(geodesic['s12'] / number_of_points * i)
