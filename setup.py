@@ -74,6 +74,7 @@ setup(name='python-geosutils',
                         'unittest2==0.5.1',
                         'sphinx==1.0.8',
                         'coverage==3.7'],
+                        'geographiclib==1.39'],
       packages=['geosutils'],
       package_dir={'geosutils': 'geosutils'},
       data_files=FILES)

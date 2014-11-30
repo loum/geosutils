@@ -7,6 +7,7 @@ __all__ = ['hashcode',
 import sys
 import time
 import calendar
+from geographiclib.geodesic import Geodesic
 
 from geosutils.log import log
 
@@ -96,3 +97,51 @@ def get_reverse_timestamp(utc_time=None):
                 (utc_time, reverse_ts))
 
     return reverse_ts
+
+def geodesic_points(point_1, point_2, precision=10000):
+    """Return list of equidistance points between *point_1* and
+    *point_2* based on *precision*
+
+    **Args:**
+        *point_1*: the decimal latitude and longitude of the first
+        point of interest
+
+        *point_2*: the decimal latitude and longitude of the second
+        point of interest
+
+        *precision*: distance in metres (default 10000) to base
+        the equidistant calculations on
+
+    **Returns:**
+        list of decimal latitude/longitude values that equate to the
+        equidistant points on the line.  For example, the points
+        between Melbourne and Canberra (default precision) would produce
+        a list similar to the following::
+
+            [(-37.813600000000001, 144.9631),
+             (-37.651180475092076, 145.24900472421263),
+             ...,
+             (-35.307500000000005, 149.12440000000001)]
+
+    """
+    log.info('Getting equidistant points along geodesic "%s, %s" ...' %
+             (point_1, point_2))
+
+    points = []
+
+    geodesic = Geodesic.WGS84.Inverse(point_1[0],
+                                      point_1[1],
+                                      point_2[0],
+                                      point_2[1])
+    line = Geodesic.WGS84.Line(geodesic['lat1'],
+                               geodesic['lon1'],
+                               geodesic['azi1'])
+
+    number_of_points = int(geodesic['s12'] / precision)
+    log.debug('Number of points to generate: %d' % number_of_points)
+
+    for i in range(number_of_points + 1):
+        point = line.Position(geodesic['s12'] / number_of_points * i)
+        points.append((point['lat2'], point['lon2']))
+
+    return points
